@@ -1,7 +1,8 @@
 const express = require('express');
 const passport = require('passport');
+const jwt= require('jsonwebtoken');
 
-const {initializingPassport}= require('./auth');
+const {initializingPassport,jwtOptions}= require('./auth');
 const {mongooseDB} = require('./database');
 const {Users} = require('./model/userModel')
 const app = express();
@@ -13,12 +14,44 @@ app.listen(3000,()=>{
     console.log("app is working");
 }),
 
-app.get("/",(req,res)=>{
-    res.send("hello"); 
+app.get("/profile",passport.authenticate('jwt',{session:false}),(req,res)=>{
+   return res.status(200).send({
+    success:true,
+    user:{
+      email: req.user.email
+      
+
+    }
+    
+   }); 
 });
-app.post("/login",passport.authenticate,(req,res)=>{
-    res.send("hello"); 
-});
+// Route for logging in a user
+app.post("/login", (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+  
+    Users.findOne({ email })
+      .then(user => {
+        if (!user) {
+          return res.status(404).json({ email: "User Not F ound" });
+        }
+  
+        if (user.password !== password) {
+          return res.status(400).json({ password: "Incorrect Password" });
+        }
+  
+        const payload = { 
+          email: user.email 
+        };
+        const token = jwt.sign(payload, jwtOptions.secretOrKey);
+        res.json({
+          email:user.email,
+          success: true,
+          token: "Bearer " + token
+        });
+      })
+      .catch(err => console.error(err));
+  });
 
 app.post('/register',async(req,res)=>{
    const user = await Users.findOne({email: req.body.email});
@@ -27,13 +60,9 @@ app.post('/register',async(req,res)=>{
    }
    const newUser = await Users.create(req.body);
    
-   const token = passport.authenticate('jwt', { session: false },(req, res, () => {
-    res.status(200).send({
-    
-      email: newUser.email,
-      token: 'Bearer ' + token
+   
+    res.status(200).send(newUser);
     });
-  }));
-});
+
    
    
