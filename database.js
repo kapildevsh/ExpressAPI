@@ -1,13 +1,15 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+require("dotenv").config();
 
- exports.mongooseDB=()=>{
-    mongoose.connect("mongodb://localhost:27017/Kapil").then(()=>{
-        console.log("Database Connected Successfully");
-    }).catch((err)=>{
-        console.log(err)
+const DB_URL = process.env.DB_URL;
+
+exports.mongooseDB = () => {
+  mongoose
+    .connect(DB_URL)
+    .then(() => {
+      console.log("Database Connected Successfully");
+    })
+    .catch((err) => {
+      console.log(err);
     });
-
- };
-
- 
-
+};
