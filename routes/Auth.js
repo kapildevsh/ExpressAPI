@@ -8,7 +8,7 @@ const passport = require("passport");
 router.post('/login', AuthController.login); 
 router.post('/register', AuthController.register); 
 router.get('/profile', passport.authenticate('jwt', { session: false }), AuthController.profile);
-router.get('/test',console.log("test api"));
+
 
 
 

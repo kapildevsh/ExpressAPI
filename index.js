@@ -15,3 +15,7 @@ const app = express();
   app.use("/", routes);
 
    app.listen(3000, () => {console.log("app is working");});
+
+   app.get('/test',(req,res)=>{
+    res.send("api test")
+   })
