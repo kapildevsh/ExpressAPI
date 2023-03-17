@@ -1,28 +1,17 @@
+const express = require("express");
+const passport = require("passport");
+const jwt = require("jsonwebtoken");
+const { initializingPassport, jwtOptions } = require("./passport");
+const { mongooseDB } = require("./database");
+const { Users } = require("./models/userModel");
+const routes = require("./routes/Auth");
 
-require('dotenv').config();
+const app = express();
+  mongooseDB();
+  initializingPassport(passport);
+  app.use(passport.initialize());
+  app.use(express.json()); 
 
-const DB_URL = process.env.DB_URL;
+  app.use("/", routes);
 
-console.log(DB_URL);
-
-
-   
-    
-    const chrome = async()=>{
-        const kapil = await studentModel.create({
-            first_name:"Sarita",
-            last_name:"Dev"
-        })
-        console.log(kapil);
-    }
-    const bharat = async()=>{
-        const kapildev = await studentModel.find();
-        console.log(kapildev);
-    }
-    const suresh = async()=>{
-        const kapildevsh = await studentModel.find({first_name:{$eq:6}});
-        console.log(kapildevsh);
-    }
-    chrome();
-    bharat();
-    suresh();
+   app.listen(3000, () => {console.log("app is working");});
